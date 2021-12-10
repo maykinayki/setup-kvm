@@ -1,18 +1,40 @@
+#!/bin/bash
+
+read -p "Enter network id in range [2:254]: " NTW_ID
+
+re='^[0-9]+$'
+if ! [[ $NTW_ID =~ $re ]] ; then
+   echo "error: Not a number"
+   exit 1
+fi
+
+if ((NTW_ID < 2 || NTW_ID > 254)); then
+  echo "error: not in range [2:254]"
+  exit 1
+fi
+
+ntw_name="ntw$NTW_ID"
+virbr_name="virbr$NTW_ID"
+virbr_ip="10.0.$NTW_ID.1"
+
+read -e -p "Enter network name (suggested: $ntw_name): " -i $ntw_name NTW_NAME
+read -e -p "Enter bridge name (default: $virbr_name): " -i $virbr_name VIRBR_NAME
+read -e -p "Enter bridge ip (default: $virbr_ip): " -i $virbr_ip VIRBR_IP
+
+DHCP_RANGE_START="10.0.$NTW_ID.10"
+DHCP_RANGE_END="10.0.$NTW_ID.250"
+
 echo "<network>
-  <name>ntw10</name>
+  <name>$NTW_NAME</name>
   <forward mode='nat'/>
-  <bridge name='virbr10' stp='on' delay='0'/>
-  <ip address='10.0.10.1' netmask='255.255.255.0'>
+  <bridge name='$VIRBR_NAME' stp='on' delay='0'/>
+  <ip address='$VIRBR_IP' netmask='255.255.255.0'>
     <dhcp>
-      <range start='10.0.10.10' end='10.0.10.250'/>
+      <range start='$DHCP_RANGE_START' end='$DHCP_RANGE_END'/>
     </dhcp>
   </ip>
-</network>" | tee ntw10.xml
+</network>" | tee $NTW_NAME.xml
 
 
-virsh net-define --file ntw10.xml
-virsh net-start --network ntw10
-
-## Enable forwarding from local network - 192.168.0.0/16
-sudo iptables -D LIBVIRT_FWI --out-interface virbr10 --source 192.168.0.0/16 --destination 10.0.10.0/24 -j ACCEPT
-sudo iptables -I LIBVIRT_FWI --out-interface virbr10 --source 192.168.0.0/16 --destination 10.0.10.0/24 -j ACCEPT
+virsh net-define --file $NTW_NAME.xml
+virsh net-info --network $NTW_NAME

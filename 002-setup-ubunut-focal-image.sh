@@ -1,3 +1,5 @@
+#!/bin/bash
+
 wget -nc https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img
 
 sudo mkdir /var/lib/libvirt/images/templates
