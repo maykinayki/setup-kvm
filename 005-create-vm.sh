@@ -17,8 +17,7 @@ vm_name="$NTW_NAME-vm-$RANDOM"
 read -e -p "Enter VM name (suggested: $vm_name): " -i $vm_name VM_NAME
 
 
-SSHPublicKey_1=$(cat ~/.ssh/id_rsa.pub)
-SSHPublicKey_2="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCle928mIr87fGMerGSyrkjz47yuObyq1ok/lEkmYcJort2tpzLrXr9IGlhUHW7/qtQp/0+hsM54Qa7x01bzJ6NWV1hQZOaHT92t/GDFTXjwDfQWca6vDxAnVxL8zYdVDKVIo4E8ZSW8qCPuveaN2Bx01PQUYpff3I6V5+E7u7dZkUNJvADaKdut3LaP19NoQ97WdFWEbH37NRsS/XtDcOy1Hw3eS9t7vRDUUdT5bRu9gSOua8/2Am6oxiAWFT6mtLHj/o8GqEAAZEmU6ds+7cLbtgJxwh+NpR0EVnD1+AOx0MLpcL1Nh1P/2G72EP6Ted8Oa17iZ8rlZmkB/k8N37JnFucolwjyTgW6YqTMr8h5onGpIipW1m050gnSl2LD2zvEgVunEn22ITJ4OlMC8rIM6hu2PkoN8AEAbd/BVXjivoqeHDFYr2mf3++aldioYgRM8008XrI3M3C1+zX1NAswBQ05QMhJImPxUgKDFECsARK2Zc+Mx6S+8PJ2fcRL/E= mayki@MIKE-RGB"
+SSHPublicKey_2="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMmCqLDO0aVUH9oog42sH91s3gc0Q0PpYqQ12Hh0h/eP mazahir.eyvazli@gmail.com"
 VM_ROOT_DIR="/var/lib/libvirt/images/$VM_NAME"
 
 sudo mkdir $VM_ROOT_DIR \
@@ -42,7 +41,6 @@ users:
     sudo: ALL=(ALL) NOPASSWD:ALL
     lock_passwd: true
     ssh_authorized_keys:
-      - $SSHPublicKey_1
       - $SSHPublicKey_2
 
 hostname: $VM_NAME
@@ -85,5 +83,5 @@ sleep 2
 echo -ne '#######################   (99%)\r'
 echo -en "\n\n"
 
-watch -g virsh domifaddr --domain $VM_NAME
+sleep 5
 virsh domifaddr --domain $VM_NAME
